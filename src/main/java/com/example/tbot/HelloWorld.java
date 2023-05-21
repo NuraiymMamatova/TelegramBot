@@ -6,6 +6,7 @@ import com.squareup.okhttp.Response;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Value;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -14,6 +15,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class HelloWorld extends TelegramLongPollingBot {
@@ -25,6 +27,12 @@ public class HelloWorld extends TelegramLongPollingBot {
     Response response = null;
 
     String sendCoronaDataNumbers = "";
+
+    @Value("${bot.username}")
+    private String botUsername;
+
+    @Value("${bot.token}")
+    private String botToken;
 
     static String welcomemessage =
             "Thank you for using Peaksoft Bot \uD83D\uDE09.\n\n" +
@@ -57,7 +65,7 @@ public class HelloWorld extends TelegramLongPollingBot {
             keyboardRowList.add(row);
 
             row = new KeyboardRow();
-            row.add("COVID \uD83E\uDDA0 GLOBAL DATA \uD83D\uDCCA");
+            row.add("Convert exchange rates");
             keyboardRowList.add(row);
 
             row = new KeyboardRow();
@@ -142,25 +150,26 @@ public class HelloWorld extends TelegramLongPollingBot {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else if (update.getMessage().getText().equals("COVID \uD83E\uDDA0 GLOBAL DATA \uD83D\uDCCA")) {
+        } else if (update.getMessage().getText().equals("Convert exchange rates")) {
             try {
+                String to = "USD";
+                String from = "EUR";
+                String amount = "100";
                 okHttpClient = new OkHttpClient();
                 request = new Request.Builder()
-                        .url("https://disease.sh/v2/all")
+                        .url("https://api.apilayer.com/fixer/convert?to=" + to + "&from=" + from + "&amount=" + amount)
+                        .addHeader("apikey", "qU9uZU8xGYCv4tGw2soV2rDQf7qhXi1U")
                         .get()
                         .build();
                 Response response = okHttpClient.newCall(request).execute();
                 String data = response.body().string();
                 JSONParser jsonParser = new JSONParser();
                 JSONObject jsonObject = (JSONObject) jsonParser.parse(data);
-
-                sendMessage.setText("COVID 19 GLOBAL DATA\n\nTotal cases : " + jsonObject.get("cases") +
-                        "\nRecovered : " + jsonObject.get("recovered") +
-                        "\nCritical : " + jsonObject.get("critical") +
-                        "\nActive : " + jsonObject.get("active") +
-                        "\nToday Cases : " + jsonObject.get("todayCases") +
-                        "\nTotal Deaths : " + jsonObject.get("deaths") +
-                        "\nToday Deaths : " + jsonObject.get("todayDeaths"));
+                sendMessage.setText(
+                        "\nFrom : " + jsonObject.get("query").toString() +
+                        "\nTo : " + jsonObject.get("to") +
+                        "\nAmount : " + jsonObject.get("amount") +
+                        "\nResult: " + jsonObject.get("result"));
                 sendMessage.setChatId(update.getMessage().getChatId());
                 execute(sendMessage);
 
@@ -316,11 +325,11 @@ public class HelloWorld extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "AlreadyExistsBOt";
+        return botUsername;
     }
 
     @Override
     public String getBotToken() {
-        return "6080176828:AAHud-nD7yvWza0GzE0EIGl3A-WOVOxR810";
+        return botToken;
     }
 }

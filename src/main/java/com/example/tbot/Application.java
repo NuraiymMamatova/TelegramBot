@@ -16,13 +16,13 @@ public class Application {
 
     public static void main(String[] args) throws TelegramApiException {
         SpringApplication.run(Application.class, args);
-//        TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-//        try
-//        {
-//            telegramBotsApi.registerBot(new HelloWorld());
-//            wakeUpDyno();
-//        }
-//        catch (Exception e){e.printStackTrace();}
+        TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
+        try
+        {
+            telegramBotsApi.registerBot(new HelloWorld());
+            wakeUpDyno();
+        }
+        catch (Exception e){e.printStackTrace();}
     }
     private static void wakeUpDyno() {
         try {
