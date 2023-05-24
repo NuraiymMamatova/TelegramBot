@@ -17,31 +17,30 @@ public class Application {
     public static void main(String[] args) throws TelegramApiException {
         SpringApplication.run(Application.class, args);
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-        try
-        {
+        try {
             telegramBotsApi.registerBot(new HelloWorld());
             wakeUpDyno();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        catch (Exception e){e.printStackTrace();}
     }
+
     private static void wakeUpDyno() {
         try {
-            while(true) {
+            while (true) {
 
                 URL url = new URL("https://aioob.herokuapp.com/");
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 int responcode = connection.getResponseCode();
-                System.out.println("RS CODE:"+responcode);
-                if (responcode == HttpURLConnection.HTTP_OK)
-                {
+                System.out.println("RS CODE:" + responcode);
+                if (responcode == HttpURLConnection.HTTP_OK) {
                     System.out.println("Working");
-                }
-                else{
+                } else {
                     System.out.println("GET not working");
                 }
 
-                Thread.sleep(60000); //
+                Thread.sleep(1000000000); //
 
             }
         } catch (InterruptedException | IOException e) {
@@ -52,8 +51,7 @@ public class Application {
 
 
     @RequestMapping("/")
-    public String index()
-    {
+    public String index() {
         return "/index";
     }
 
