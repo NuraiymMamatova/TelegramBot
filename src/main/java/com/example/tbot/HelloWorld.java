@@ -34,11 +34,10 @@ public class HelloWorld extends TelegramLongPollingBot {
     String amount = null;
 
     static String welcomemessage =
-            "Thank you for using силердин ботунардын аты \uD83D\uDE09.\n\n" +
-                    "боттун описаниеси\n" +
-                    " описаниенин уландысы\uD83D\uDD25.\n" +
+            "Спасибо за исппользование бота HelloWorld \uD83D\uDE09.\n\n" +
+                    "Бот умеет конвертироваь валюты \uD83D\uDD25.\n" +
                     "\n\n" +
-                    "Автор бота \uD83D\uDC68\u200D\uD83D\uDCBB : озунузду инстаграммыныз";
+                    "Автор бота \uD83D\uDC68\u200D\uD83D\uDCBB: ";
 
     JSONParser parser = new JSONParser();
 
@@ -48,10 +47,10 @@ public class HelloWorld extends TelegramLongPollingBot {
 //        System.out.println(update.getMessage().getChat().getFirstName());
 //        System.out.println(update.getMessage().getChat().getUserName());
         String innerAmount = update.getMessage().getText();
-        boolean isOnlyDigits = true;
-        for (int i = 0; i < innerAmount.length() && isOnlyDigits; i++) {
-            if (!Character.isDigit(innerAmount.charAt(i))) {
-                isOnlyDigits = false;
+        boolean isOnlyDigits = false;
+        for (int i = 0; i < innerAmount.length() && !isOnlyDigits; i++) {
+            if (Character.isDigit(innerAmount.charAt(i)) || Character.isDigit(innerAmount.charAt(i)) && innerAmount.contains(".")) {
+                isOnlyDigits = true;
             }
         }
         System.out.println(isOnlyDigits); // => true
@@ -222,7 +221,7 @@ public class HelloWorld extends TelegramLongPollingBot {
             to = update.getMessage().getText();
             try {
                 sendMessage.setChatId(update.getMessage().getChatId());
-                sendMessage.setText("Write amount: ");
+                sendMessage.setText("Введите сумму: ");
                 execute(sendMessage);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -254,26 +253,21 @@ public class HelloWorld extends TelegramLongPollingBot {
                 JSONParser jsonParser = new JSONParser();
                 JSONObject jsonObject = null;
                 jsonObject = (JSONObject) jsonParser.parse(data);
-                String query = jsonObject.get("query").toString();
 
                 sendMessage.setText(
-                        "\nFrom : " +
-                                "\nTo : " + jsonObject.get("to") +
-                                "\nAmount : " + jsonObject.get("amount") +
+                        "\nFrom : " + from +
+                                "\nTo : " + to +
+                                "\nAmount : " + amount +
                                 "\nResult: " + jsonObject.get("result"));
                 sendMessage.setChatId(update.getMessage().getChatId());
                 replyKeyboardMarkup.setKeyboard(keyboardRowList);
                 sendMessage.setReplyMarkup(replyKeyboardMarkup);
                 execute(sendMessage);
-
+                to = null;
+                from = null;
+                amount = null;
             } catch (TelegramApiException | IOException | ParseException e) {
                 throw new RuntimeException(e);
-            }
-            try {
-                sendMessage.setChatId(update.getMessage().getChatId());
-                execute(sendMessage);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         } else if (update.getMessage().getText().equals("Unlimited Courses")) {
             try {
